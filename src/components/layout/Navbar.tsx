@@ -1,25 +1,41 @@
-import { Search } from 'lucide-react';
+import { Search } from "lucide-react";
+
+import logo from "../../assets/logo.png";
 
 const Navbar = () => {
   return (
     <nav className="navbar fixed top-0 z-50 bg-transparent px-6 py-4 flex items-center justify-between w-full">
       {/*  LOGO */}
-      <div className="flex-none">
-        <img 
-          src="/path-to-your-logo/logo.png" 
-          alt="SaintStream Logo" 
-          className="h-8 md:h-10 object-contain cursor-pointer" 
+      <div className="flex items-center gap-2 group cursor-pointer">
+        <img
+          src={logo}
+          alt="SaintStream Logo"
+          className="h-15 md:h-20 object-contain"
         />
+
+        <span className="text-white text-xl md:text-2xl  tracking-tight font-sans">
+          Saint<span>Stream</span>
+        </span>
       </div>
 
       {/*  LIENS CENTRÉS */}
       <div className="hidden lg:flex flex-1 justify-center">
         <ul className="flex items-center gap-8 text-[16px] font-semibold text-gray-300">
-          <li className="text-white border-b-2 border-transparent cursor-pointer transition-all">Home</li>
-          <li className="hover:text-white cursor-pointer transition-all">Discover</li>
-          <li className="hover:text-white cursor-pointer transition-all">Movie Release</li>
-          <li className="hover:text-white cursor-pointer transition-all">Forum</li>
-          <li className="hover:text-white cursor-pointer transition-all">About</li>
+          <li className="text-white border-b-2 border-transparent cursor-pointer transition-all">
+            Home
+          </li>
+          <li className="hover:text-white cursor-pointer transition-all">
+            Discover
+          </li>
+          <li className="hover:text-white cursor-pointer transition-all">
+            Movie Release
+          </li>
+          <li className="hover:text-white cursor-pointer transition-all">
+            Forum
+          </li>
+          <li className="hover:text-white cursor-pointer transition-all">
+            About
+          </li>
         </ul>
       </div>
 
@@ -28,7 +44,7 @@ const Navbar = () => {
         <button className="text-white transition-transform cursor-pointer">
           <Search size={22} strokeWidth={2.5} />
         </button>
-        
+
         <div className="flex items-center gap-3">
           <button className="btn border-white text-white bg-transparent px-6 rounded-xl normal-case">
             Sign up
