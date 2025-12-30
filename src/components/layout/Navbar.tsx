@@ -3,7 +3,7 @@ import { Search } from 'lucide-react';
 const Navbar = () => {
   return (
     <nav className="navbar fixed top-0 z-50 bg-transparent px-6 py-4 flex items-center justify-between w-full">
-      {/* 1. LOGO (Image) */}
+      {/*  LOGO */}
       <div className="flex-none">
         <img 
           src="/path-to-your-logo/logo.png" 
@@ -12,10 +12,10 @@ const Navbar = () => {
         />
       </div>
 
-      {/* 2. LIENS CENTRÉS */}
+      {/*  LIENS CENTRÉS */}
       <div className="hidden lg:flex flex-1 justify-center">
-        <ul className="flex items-center gap-8 text-sm font-semibold text-gray-300">
-          <li className="text-white border-b-2 border-transparent hover:border-white cursor-pointer transition-all">Home</li>
+        <ul className="flex items-center gap-8 text-[16px] font-semibold text-gray-300">
+          <li className="text-white border-b-2 border-transparent cursor-pointer transition-all">Home</li>
           <li className="hover:text-white cursor-pointer transition-all">Discover</li>
           <li className="hover:text-white cursor-pointer transition-all">Movie Release</li>
           <li className="hover:text-white cursor-pointer transition-all">Forum</li>
@@ -23,17 +23,17 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* 3. RECHERCHE & AUTH */}
+      {/*  RECHERCHE & AUTH */}
       <div className="flex items-center gap-6">
-        <button className="text-white hover:scale-110 transition-transform">
+        <button className="text-white transition-transform cursor-pointer">
           <Search size={22} strokeWidth={2.5} />
         </button>
         
         <div className="flex items-center gap-3">
-          <button className="btn btn-ghost border-white/40 text-white hover:bg-white/10 px-6 rounded-xl normal-case">
+          <button className="btn border-white text-white bg-transparent px-6 rounded-xl normal-case">
             Sign up
           </button>
-          <button className="btn btn-success bg-[#00925d] border-none text-white px-8 rounded-xl normal-case">
+          <button className="btn bg-[#00925d] border-none text-white px-8 rounded-xl normal-case">
             Login
           </button>
         </div>
