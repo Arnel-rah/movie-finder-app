@@ -3,6 +3,7 @@ import HeroBanner from "./components/movies/HeroBanner";
 import BrandLogos from "./components/brands/BrandLogos"; // Importation
 import MovieRow from "./components/movies/MovieRow";
 import { useMovies } from "./hooks/useMovies";
+import TopRankingRow from "./components/movies/TopRankingRow";
 
 function App() {
   const { movies: trendingMovies, loading: heroLoading } = useMovies(
@@ -18,7 +19,7 @@ function App() {
         <BrandLogos />
         <div className="flex flex-col gap-8 pb-20">
           <MovieRow title="Just Release" endpoint="/movie/now_playing" />
-          <MovieRow title="Popular" endpoint="/movie/popular" />
+          <TopRankingRow />
         </div>
       </main>
     </div>
