@@ -10,7 +10,6 @@ const TopRankingRow = () => {
 
   const handleScroll = () => {
     if (scrollRef.current) {
-      // Affiche la flèche gauche uniquement si on a défilé de plus de 10px
       setShowLeftArrow(scrollRef.current.scrollLeft > 10);
     }
   };
@@ -18,7 +17,6 @@ const TopRankingRow = () => {
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const { clientWidth } = scrollRef.current;
-      // Défilement d'une largeur d'écran à chaque clic
       const scrollAmount = direction === 'left' ? -clientWidth : clientWidth;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
@@ -28,7 +26,6 @@ const TopRankingRow = () => {
 
   return (
     <div className="py-8 px-6 md:px-12 lg:px-20 relative group">
-      {/* Titre identique au style de MovieRow */}
       <h2 className="text-xl md:text-2xl font-bold mb-6 text-white tracking-wide">
         Popular of the week
       </h2>
