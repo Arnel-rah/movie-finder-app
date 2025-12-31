@@ -1,4 +1,5 @@
 export interface Movie {
+  genre_ids: any;
   id: number;
   title: string;
   poster_path: string;
