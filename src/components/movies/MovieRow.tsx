@@ -13,14 +13,12 @@ const MovieRow = ({ title, endpoint }: MovieRowProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
 
-  // Gerer l'affichage
   const handleScroll = () => {
     if (scrollRef.current) {
       setShowLeftArrow(scrollRef.current.scrollLeft > 10);
     }
   };
 
-  // Fonction de défilement
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const { clientWidth } = scrollRef.current;
