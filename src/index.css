@@ -1,2 +1,14 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
 @import "tailwindcss";
 @plugin "daisyui";
+@theme {
+  --font-sans: "Quicksand", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html, body {
+    font-family: var(--font-sans);
+  }
+}
