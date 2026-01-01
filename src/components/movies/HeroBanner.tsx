@@ -9,6 +9,13 @@ interface HeroBannerProps {
   loading: boolean;
 }
 
+const GENRE_MAP: { [key: number]: string } = {
+  28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime',
+  99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History',
+  27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-Fi',
+  10770: 'TV Movie', 53: 'Thriller', 10752: 'War', 37: 'Western'
+};
+
 const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -57,59 +64,60 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
           </div>
         </motion.div>
       </AnimatePresence>
-
-      {/* Contenu Texte */}
-      <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 lg:px-20 pt-40 max-w-4xl">
+      <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 lg:px-20 pt-40 max-w-5xl">
         <motion.div
           key={`text-${currentMovie.id}`}
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.8 }}
         >
-          <span className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-[25px] text-[10px] font-bold mb-6 inline-block border border-white/10 uppercase tracking-widest">
-            Movie
+          <span className="bg-[#00925d]/20 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-bold mb-6 inline-block border border-[#00925d]/30 uppercase tracking-[0.2em] text-[#00ff9d]">
+            Trending Now
           </span>
           
-          <h1 className="text-2xl font-bold mb-4 leading-tight">
+          <h1 className="text-4xl md:text-3xl font-bold mb-6 leading-tight tracking-tight max-w-3xl">
             {currentMovie.title}
           </h1>
 
-          <div className="flex items-center gap-3 text-gray-400 text-xs md:text-sm mb-6 font-medium">
-             <span>{currentMovie.release_date?.split('-')[0]}</span>
+          <div className="flex items-center gap-3 text-gray-300 text-xs md:text-sm mb-6 font-medium">
+             <span className="bg-white/10 px-2 py-0.5 rounded text-white">{currentMovie.release_date?.split('-')[0]}</span>
              <span>•</span>
-             <span>2h 40m</span>
+             <span className="text-yellow-500 font-bold">★ {currentMovie.vote_average?.toFixed(1)}</span>
              <span>•</span>
-             <span className="text-gray-300">Fantasy · Actions</span>
+             <span className="text-gray-300">
+                {currentMovie.genre_ids
+                  ?.slice(0, 2)
+                  .map((id: number) => GENRE_MAP[id])
+                  .join(' · ')}
+             </span>
           </div>
           
-          <p className="text-w text-sm md:text-base max-w-2xl line-clamp-4 mb-10 leading-relaxed opacity-80">
+          <p className="text-white text-sm md:text-base max-w-2xl line-clamp-3 mb-10 leading-relaxed opacity-90">
             {currentMovie.overview}
           </p>
 
           <div className="flex items-center gap-4">
-            <button className="btn  bg-[#00925d] border-none text-white px-8 h-12 rounded-xl flex items-center gap-2 hover:bg-[#007a4e] transition-all">
+            <button className="bg-[#00925d] text-white px-8 h-12 rounded-xl flex items-center gap-2 hover:bg-[#007a4e] transition-all font-semibold">
               <Play size={18} fill="currentColor" />
-              <span className="text-white">Watch Trailer</span>
+              <span>Watch Now</span>
             </button>
             
-            <button className="btn btn-ghost bg-transparent border border-white text-white px-8 h-12 rounded-xl flex items-center gap-2 hover:bg-white/10  transition-all">
+            <button className="bg-white/5 border border-white/10 text-white px-8 h-12 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-all backdrop-blur-md">
               <Bookmark size={18} />
               <span className="font-bold">Add Watchlist</span>
             </button>
           </div>
         </motion.div>
       </div>
-
-      {/* Pagination */}
-      <div className="absolute bottom-10 right-8 md:right-16 flex items-center gap-3 z-20">
+      <div className="absolute bottom-10 left-6 md:left-20 flex items-center gap-3 z-20">
         {[0, 1, 2, 3, 4].map((index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
             className={`transition-all duration-500 rounded-full ${
               index === currentIndex 
-              ? "w-3 h-3 bg-white scale-125 shadow-[0_0_12px_rgba(255,255,255,0.8)]" 
-              : "w-1.5 h-1.5 bg-white/30 hover:bg-white/60"
+              ? "w-10 h-1.5 bg-[#00925d] shadow-[0_0_12px_rgba(0,146,93,0.5)]" 
+              : "w-5 h-1 bg-white/30 hover:bg-white/60"
             }`}
           />
         ))}
