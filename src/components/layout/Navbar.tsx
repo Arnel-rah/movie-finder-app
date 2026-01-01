@@ -33,20 +33,20 @@ const Navbar = () => {
           <span className="text-white text-xl font-bold">SaintStream</span>
         </div>
         <div className="hidden lg:flex gap-8 text-gray-300 font-medium">
-          <button className="text-white">Home</button>
-          <button className="hover:text-white transition">Discover</button>
-          <button className="hover:text-white transition">Movie Release</button>
-          <button className="hover:text-white transition">Forum</button>
-          <button className="hover:text-white transition">About</button>
+          <button className="text-white cursor-pointer">Home</button>
+          <button className="hover:text-white transition cursor-pointer">Discover</button>
+          <button className="hover:text-white transition cursor-pointer">Movie Release</button>
+          <button className="hover:text-white transition cursor-pointer">Forum</button>
+          <button className="hover:text-white transition cursor-pointer">About</button>
         </div>
         <div className="flex items-center gap-5">
-          <button className="text-white hover:scale-110 transition">
+          <button className="text-white hover:scale-110 transition cursor-pointer">
             <Search size={22} />
           </button>
 
           {user ? (
             <div className="flex items-center gap-4">
-              <button className="text-white hover:text-[#00925d] transition">
+              <button className="text-white hover:text-[#00925d] transition cursor-pointer">
                 <Bell size={22} />
               </button>
               <div className="group relative flex items-center gap-2 cursor-pointer">
