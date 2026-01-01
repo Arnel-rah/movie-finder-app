@@ -26,7 +26,7 @@ const LoginModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm">
       <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-[#0f0f0f] p-8 shadow-2xl">
         {/* Header du formulaire */}
         <div className="mb-8 flex items-center justify-between">

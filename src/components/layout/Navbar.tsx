@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import logo from "../../assets/logo.png";
 import LoginModal from "../auth/LoginModal";
+import SignUpModal from "../auth/SignUpModal";
 
 const Navbar = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
   return (
     <>
@@ -46,10 +48,13 @@ const Navbar = () => {
           </button>
 
           <div className="flex items-center gap-3">
-            <button className="btn border-white text-white bg-transparent px-6 rounded-xl normal-case">
+            <button
+              onClick={() => setIsSignUpOpen(true)}
+              className="btn border-white text-white bg-transparent px-6 rounded-xl normal-case"
+            >
               Sign up
             </button>
-            <button 
+            <button
               onClick={() => setIsLoginOpen(true)}
               className="btn bg-[#00925d] border-none text-white px-8 rounded-xl normal-case"
             >
@@ -59,7 +64,22 @@ const Navbar = () => {
         </div>
       </nav>
 
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onSwitchToSignUp={() => {
+          setIsLoginOpen(false);
+          setIsSignUpOpen(true);
+        }}
+      />
+      <SignUpModal
+        isOpen={isSignUpOpen}
+        onClose={() => setIsSignUpOpen(false)}
+        onSwitchToLogin={() => {
+          setIsSignUpOpen(false);
+          setIsLoginOpen(true);
+        }}
+      />
     </>
   );
 };
