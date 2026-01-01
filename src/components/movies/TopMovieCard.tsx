@@ -34,7 +34,7 @@ const TopMovieCard = ({ movie, index }: TopMovieCardProps) => {
 
   return (
     <div className="shrink-0 flex items-center gap-4 w-72 md:w-80 group cursor-pointer">
-      <span className="text-5xl md:text-7xl font-black text-white group-hover:text-white/40 transition-colors italic min-w-15 text-center">
+      <span className="text-5xl md:text-7xl font-black text-white transition-colors italic min-w-15 text-center">
         {index + 1}
       </span>
 
