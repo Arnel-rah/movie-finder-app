@@ -20,7 +20,10 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignUp }: LoginModalProps) => {
     setLoading(true);
     setErrorMsg('');
     
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ 
+      email: email.trim(), 
+      password 
+    });
 
     if (error) {
       setErrorMsg(error.message);
@@ -48,7 +51,11 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignUp }: LoginModalProps) => {
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
-          {errorMsg && <p className="text-red-500 text-xs bg-red-500/10 p-3 rounded-lg border border-red-500/20">{errorMsg}</p>}
+          {errorMsg && (
+            <p className="text-red-500 text-xs bg-red-500/10 p-3 rounded-lg border border-red-500/20">
+              {errorMsg}
+            </p>
+          )}
           
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-300">Email</label>
@@ -86,7 +93,9 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignUp }: LoginModalProps) => {
 
         <p className="mt-6 text-center text-xs text-gray-500">
           Don't have an account?{" "}
-          <button onClick={onSwitchToSignUp} className="text-white cursor-pointer font-bold hover:underline">Sign up</button>
+          <button onClick={onSwitchToSignUp} className="text-white cursor-pointer font-bold hover:underline">
+            Sign up
+          </button>
         </p>
       </div>
     </div>
