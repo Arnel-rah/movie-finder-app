@@ -75,7 +75,7 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
             Trending Now
           </span>
           
-          <h1 className="text-3xl md:text-5xl font-black mb-4 leading-tight tracking-tight max-w-3xl drop-shadow-2xl">
+          <h1 className="text-3xl md:text-2xl font-black mb-4 leading-tight tracking-tight max-w-3xl drop-shadow-2xl">
             {currentMovie.title}
           </h1>
 
