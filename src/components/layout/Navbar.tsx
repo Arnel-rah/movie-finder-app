@@ -9,8 +9,8 @@ const Navbar = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // État pour le menu
-  const menuRef = useRef<HTMLDivElement>(null); // Pour détecter le clic extérieur
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null); 
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -19,8 +19,6 @@ const Navbar = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
-
-    // Fermer le menu si on clique ailleurs
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
@@ -41,7 +39,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="navbar fixed top-0 z-50 bg-[#0f0f0f]/80 backdrop-blur-md px-6 py-4 flex items-center justify-between w-full border-b border-white/5">
+      <nav className="navbar sticky top-0 z-50 bg-[#0f0f0f]/80 backdrop-blur-md px-6 py-4 flex items-center justify-between w-full border-b border-white/5">
         <div className="flex items-center gap-2 cursor-pointer">
           <img src={logo} alt="Logo" className="h-10 object-contain" />
           <span className="text-white text-xl font-bold tracking-tight">SaintStream</span>
