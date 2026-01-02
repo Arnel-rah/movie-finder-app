@@ -70,13 +70,13 @@ const Navbar = () => {
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => setIsSignUpOpen(true)}
-                className="text-white px-5 py-2 rounded-xl border border-white/20 hover:bg-white/5 transition"
+                className="text-white px-5 py-2 rounded-xl border border-white/20 hover:bg-white/5 transition cursor-pointer"
               >
                 Sign up
               </button>
               <button 
                 onClick={() => setIsLoginOpen(true)}
-                className="bg-[#00925d] text-white px-6 py-2 rounded-xl font-semibold hover:bg-[#007a4d] transition"
+                className="bg-[#00925d] text-white px-6 py-2 rounded-xl font-semibold hover:bg-[#007a4d] transition cursor-pointer"
               >
                 Login
               </button>
