@@ -97,12 +97,12 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
           </p>
 
           <div className="flex items-center gap-4">
-            <button className="bg-[#00925d] text-white px-8 h-12 rounded-xl flex items-center gap-2 hover:bg-[#007a4e] transition-all font-semibold">
+            <button className="bg-[#00925d] text-white px-8 h-12 rounded-xl flex items-center gap-2 hover:bg-[#007a4e] transition-all font-semibold cursor-pointer">
               <Play size={18} fill="currentColor" />
               <span>Watch Now</span>
             </button>
             
-            <button className="bg-white/5 border border-white/10 text-white px-8 h-12 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-all backdrop-blur-md">
+            <button className="bg-white/5 cursor-pointer border border-white/10 text-white px-8 h-12 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-all backdrop-blur-md">
               <Bookmark size={18} />
               <span className="font-bold">Add Watchlist</span>
             </button>
