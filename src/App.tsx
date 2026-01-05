@@ -4,6 +4,7 @@ import BrandLogos from "./components/brands/BrandLogos"; // Importation
 import MovieRow from "./components/movies/MovieRow";
 import { useMovies } from "./hooks/useMovies";
 import TopRankingRow from "./components/movies/TopRankingRow";
+import MovieBot from "./components/MovieBot";
 
 function App() {
   const { movies: trendingMovies, loading: heroLoading } = useMovies(
@@ -22,6 +23,7 @@ function App() {
           <TopRankingRow />
         </div>
       </main>
+      <MovieBot/>
     </div>
   );
 }
