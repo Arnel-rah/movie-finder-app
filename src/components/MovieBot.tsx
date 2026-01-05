@@ -8,12 +8,19 @@ const MovieBot = () => {
   const [chatLog, setChatLog] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUserSignedIn, setIsUserSignedIn] = useState(false);
+  const [isChecking, setIsChecking] = useState(true); // État pour éviter le flash du bouton
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const signedIn = await puter.auth.isSignedIn();
-      setIsUserSignedIn(signedIn);
+      try {
+        const signedIn = await puter.auth.isSignedIn();
+        setIsUserSignedIn(signedIn);
+      } catch (err) {
+        setIsUserSignedIn(false);
+      } finally {
+        setIsChecking(false);
+      }
     };
     checkAuth();
   }, []);
@@ -24,7 +31,17 @@ const MovieBot = () => {
     }
   }, [chatLog, isLoading]);
 
-  if (!isUserSignedIn) return null;
+  if (isChecking || !isUserSignedIn) return null;
+
+  const toggleChat = async () => {
+    const signedIn = await puter.auth.isSignedIn();
+    if (!signedIn) {
+      setIsUserSignedIn(false);
+      setIsOpen(false);
+      return;
+    }
+    setIsOpen(!isOpen);
+  };
 
   const askAI = async () => {
     if (!message.trim() || isLoading) return;
@@ -56,7 +73,7 @@ const MovieBot = () => {
   return (
     <div className="fixed bottom-6 right-6 z-100 font-sans">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleChat}
         className="relative bg-[#00925d] p-4 rounded-full shadow-[0_0_20px_rgba(0,146,93,0.4)] text-white hover:scale-110 active:scale-95 transition-all cursor-pointer group"
       >
         {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
