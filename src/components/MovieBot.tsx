@@ -49,25 +49,46 @@ const MovieBot = () => {
 
     const userInput = message.trim();
     setMessage("");
-    setChatLog((prev) => [...prev, { role: "user", content: userInput }]);
+    
+    setChatLog((prev) => [
+      ...prev, 
+      { role: "user", content: userInput },
+      { role: "assistant", content: "" }
+    ]);
     setIsLoading(true);
 
     try {
-      const response = await puter.ai.chat([
-        {
-          role: "system",
-          content: "You are the official SaintStream AI assistant. Use bullet points for lists. Use **bold** for movie titles. Brand color: #00925d.",
-        },
-        { role: "user", content: userInput },
-      ]);
+      const response = await puter.ai.chat(
+        [
+          {
+            role: "system",
+            content: "You are the official SaintStream AI assistant. Use bullet points for lists. Use **bold** for movie titles. Brand color: #00925d.",
+          },
+          { role: "user", content: userInput },
+        ],
+        { stream: true }
+      );
 
-      const aiResponse = response.toString();
-      setChatLog((prev) => [...prev, { role: "assistant", content: aiResponse }]);
+      let fullContent = "";
+      for await (const part of response) {
+        if (part?.text) {
+          fullContent += part.text;
+          setChatLog((prev) => {
+            const newLog = [...prev];
+            newLog[newLog.length - 1] = { role: "assistant", content: fullContent };
+            return newLog;
+          });
+        }
+      }
     } catch (error) {
-      setChatLog((prev) => [
-        ...prev,
-        { role: "assistant", content: "I'm having trouble connecting. Please try again." },
-      ]);
+      setChatLog((prev) => {
+        const newLog = [...prev];
+        newLog[newLog.length - 1] = { 
+          role: "assistant", 
+          content: "Sorry, I encountered a connection issue. Please try again." 
+        };
+        return newLog;
+      });
     } finally {
       setIsLoading(false);
     }
@@ -109,7 +130,7 @@ const MovieBot = () => {
                 <div className="p-4 bg-white/5 rounded-full text-[#00925d]">
                   <Sparkles size={32} />
                 </div>
-                <p className="text-sm text-gray-400 px-8">Welcome back! How can I help you today?</p>
+                <p className="text-sm text-gray-400 px-8">Welcome! Ask me for movie recommendations or help with your stream.</p>
               </div>
             )}
 
@@ -134,8 +155,7 @@ const MovieBot = () => {
                 </div>
               </div>
             ))}
-
-            {isLoading && (
+            {isLoading && chatLog[chatLog.length - 1]?.content === "" && (
               <div className="flex gap-3 animate-pulse">
                 <div className="h-8 w-8 rounded-lg bg-[#00925d]/10 flex items-center justify-center text-[#00925d]"><Bot size={16} /></div>
                 <div className="bg-white/5 px-4 py-3 rounded-2xl rounded-tl-none">
@@ -163,7 +183,6 @@ const MovieBot = () => {
                 <Send size={18} />
               </button>
             </div>
-            <p className="text-[9px] text-gray-600 text-center mt-3 uppercase tracking-widest">Powered by SaintStream Intelligence</p>
           </div>
         </div>
       )}
