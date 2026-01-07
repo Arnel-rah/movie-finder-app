@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, memo } from "react";
 import puter from "@heyputer/puter.js";
-import { MessageCircle, X, Send, Bot, User, Sparkles } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Sparkles, StopCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -67,6 +67,33 @@ const MovieBot = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const aborted = useRef(false);
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const saved: any = await puter.kv.get("saintstream_chat_history");
+        if (typeof saved === "string" && saved.length > 0) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed)) {
+              setChatLog(parsed);
+            }
+          } catch {}
+        }
+      } catch {}
+    };
+
+    if (isUserSignedIn) {
+      loadHistory();
+    }
+  }, [isUserSignedIn]);
+
+  useEffect(() => {
+    if (chatLog.length > 0 && isUserSignedIn) {
+      puter.kv.set("saintstream_chat_history", JSON.stringify(chatLog)).catch(() => {});
+    }
+  }, [chatLog, isUserSignedIn]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -77,7 +104,7 @@ const MovieBot = () => {
           const userData: any = await puter.auth.getUser();
           setUserAvatar(userData?.avatar_url || null);
         }
-      } catch (err) {
+      } catch {
         setIsUserSignedIn(false);
       } finally {
         setIsChecking(false);
@@ -103,8 +130,15 @@ const MovieBot = () => {
 
   if (isChecking || !isUserSignedIn) return null;
 
+  const handleStop = () => {
+    aborted.current = true;
+    setIsLoading(false);
+  };
+
   const askAI = async () => {
     if (!message.trim() || isLoading) return;
+
+    aborted.current = false;
 
     const userInput = message.trim();
     setMessage("");
@@ -141,6 +175,16 @@ const MovieBot = () => {
 
       let fullContent = "";
       for await (const part of response) {
+        if (aborted.current) {
+          fullContent += "\n\n*(Réponse interrompue par l'utilisateur)*";
+          setChatLog((prev) => {
+            const newLog = [...prev];
+            newLog[newLog.length - 1] = { ...newLog[newLog.length - 1], content: fullContent };
+            return newLog;
+          });
+          break;
+        }
+
         if (part?.text) {
           fullContent += part.text;
           setChatLog((prev) => {
@@ -150,8 +194,7 @@ const MovieBot = () => {
           });
         }
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
       setChatLog((prev) => {
         const newLog = [...prev];
         newLog[newLog.length - 1] = {
@@ -209,18 +252,19 @@ const MovieBot = () => {
               <input
                 ref={inputRef}
                 type="text"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-4 pr-12 py-3 text-sm text-white outline-none focus:border-[#00925d]/50 transition-all placeholder:text-gray-500"
+                disabled={isLoading}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-4 pr-12 py-3 text-sm text-white outline-none focus:border-[#00925d]/50 transition-all placeholder:text-gray-500 disabled:opacity-50"
                 placeholder="Posez une question sur un film ou série..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && askAI()}
               />
               <button
-                onClick={askAI}
-                disabled={isLoading || !message.trim()}
+                onClick={isLoading ? handleStop : askAI}
+                disabled={!message.trim() && !isLoading}
                 className="absolute right-2 p-2 text-[#00925d] hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send size={18} />
+                {isLoading ? <StopCircle size={18} /> : <Send size={18} />}
               </button>
             </div>
           </div>
