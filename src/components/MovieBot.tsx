@@ -229,8 +229,8 @@ const MovieBot = () => {
                 <span className="text-[10px] text-[#00925d] uppercase tracking-widest">Assistant</span>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-white transition-colors">
-              <X size={18} />
+            <button onClick={() => setIsOpen(false)} className="btn bg-transparent transition-all px-4 ">
+             Fermer
             </button>
           </div>
 
