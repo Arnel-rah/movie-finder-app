@@ -1,30 +1,24 @@
 import { useState, useRef, useEffect, memo } from "react";
 import puter from "@heyputer/puter.js";
-import { MessageCircle, X, Send, Bot, User, Sparkles, StopCircle, Trash2 } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Sparkles, StopCircle, Trash2, AlertTriangle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 type Message = { role: "user" | "assistant"; content: string };
+
 const ChatMessage = memo(({ msg, userAvatar }: { msg: Message; userAvatar: string | null }) => {
   const isTyping = msg.role === "assistant" && msg.content === "";
 
   return (
     <div className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
       <div className={`h-8 w-8 rounded-lg shrink-0 flex items-center justify-center overflow-hidden ${msg.role === "user" ? "bg-white/10" : "bg-[#00925d]/20 text-[#00925d]"}`}>
-        {msg.role === "assistant" ? (
-          <Bot size={16} />
-        ) : userAvatar ? (
-          <img src={userAvatar} className="h-full w-full object-cover" alt="User" />
-        ) : (
-          <User size={16} />
-        )}
+        {msg.role === "assistant" ? <Bot size={16} /> : userAvatar ? <img src={userAvatar} className="h-full w-full object-cover" alt="User" /> : <User size={16} />}
       </div>
-
       <div className={`px-4 py-3 rounded-2xl text-sm max-w-[80%] ${msg.role === "user" ? "bg-[#00925d]/10 text-white rounded-tr-none" : "bg-white/5 text-gray-200 border border-white/5 rounded-tl-none"}`}>
         {isTyping ? (
           <div className="flex items-center gap-2 opacity-70 h-6">
-            <div className="w-2 h-2 bg-[#00925d] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-            <div className="w-2 h-2 bg-[#00925d] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-            <div className="w-2 h-2 bg-[#00925d] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            <div className="w-2 h-2 bg-[#00925d] rounded-full animate-bounce" />
+            <div className="w-2 h-2 bg-[#00925d] rounded-full animate-bounce delay-150" />
+            <div className="w-2 h-2 bg-[#00925d] rounded-full animate-bounce delay-300" />
           </div>
         ) : (
           <div className="prose prose-invert prose-sm wrap-break-word">
@@ -47,6 +41,7 @@ const ChatMessage = memo(({ msg, userAvatar }: { msg: Message; userAvatar: strin
 
 const MovieBot = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState("");
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,25 +91,17 @@ const MovieBot = () => {
   }, []);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [chatLog, isLoading]);
 
-  const clearHistory = async () => {
-    if (window.confirm("Supprimer toute la conversation ?")) {
-      try {
-        await puter.kv.del("saintstream_chat_history");
-        setChatLog([]);
-      } catch (err) {
-        console.error("Erreur suppression:", err);
-      }
+  const confirmClear = async () => {
+    try {
+      await puter.kv.del("saintstream_chat_history");
+      setChatLog([]);
+      setShowConfirm(false);
+    } catch (err) {
+      console.error("Erreur suppression:", err);
     }
-  };
-
-  const handleStop = () => {
-    aborted.current = true;
-    setIsLoading(false);
   };
 
   const askAI = async () => {
@@ -172,6 +159,30 @@ const MovieBot = () => {
 
       {isOpen && (
         <div className="absolute bottom-20 right-0 w-80 md:w-96 h-137.5 bg-[#0f0f0f] border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          
+          {/* MODALE DE CONFIRMATION INTERNE */}
+          {showConfirm && (
+            <div className="absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-200">
+              <div className="bg-[#1a1a1a] border border-white/10 p-6 rounded-2xl shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-300">
+                <div className="mx-auto w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center text-red-500">
+                  <AlertTriangle size={24} />
+                </div>
+                <div>
+                  <h4 className="text-white font-bold">Tout supprimer ?</h4>
+                  <p className="text-xs text-gray-400 mt-1">Cette action est irréversible et effacera votre historique.</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => setShowConfirm(false)} className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-xl transition-all cursor-pointer">
+                    Annuler
+                  </button>
+                  <button onClick={confirmClear} className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition-all cursor-pointer">
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Header */}
           <div className="p-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -180,7 +191,7 @@ const MovieBot = () => {
             </div>
             <div className="flex items-center gap-1">
               {chatLog.length > 0 && (
-                <button onClick={clearHistory} className="p-2 text-gray-500 hover:text-red-400 transition-all cursor-pointer" title="Effacer tout">
+                <button onClick={() => setShowConfirm(true)} className="p-2 text-gray-500 hover:text-red-400 transition-all cursor-pointer">
                   <Trash2 size={18} />
                 </button>
               )}
@@ -189,7 +200,7 @@ const MovieBot = () => {
           </div>
 
           {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6">
             {chatLog.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full text-center space-y-4 text-gray-400">
                 <Sparkles size={32} className="text-[#00925d]" />
@@ -214,7 +225,7 @@ const MovieBot = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && askAI()}
               />
-              <button onClick={isLoading ? handleStop : askAI} className="absolute right-2 p-2 text-[#00925d] hover:text-white transition-all disabled:opacity-30 cursor-pointer">
+              <button onClick={isLoading ? () => (aborted.current = true) : askAI} className="absolute right-2 p-2 text-[#00925d] hover:text-white transition-all disabled:opacity-30 cursor-pointer">
                 {isLoading ? <StopCircle size={18} /> : <Send size={18} />}
               </button>
             </div>
