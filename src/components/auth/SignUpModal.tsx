@@ -25,17 +25,15 @@ const SignUpModal = ({
 
   const isFormValid = email && password && confirmPassword && username && isChecked;
 
-useEffect(() => {
-  let timer: number | any; 
-  
-  if (showSuccess && countdown > 0) {
-    timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-  } else if (showSuccess && countdown === 0) {
-    onSwitchToLogin();
-  }
-  
-  return () => clearTimeout(timer);
-}, [showSuccess, countdown, onSwitchToLogin]);
+  useEffect(() => {
+    let timer: any;
+    if (showSuccess && countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else if (showSuccess && countdown === 0) {
+      onSwitchToLogin();
+    }
+    return () => clearTimeout(timer);
+  }, [showSuccess, countdown, onSwitchToLogin]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,23 +66,27 @@ useEffect(() => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-      <div className="relative w-full max-w-md rounded-4xl border border-white/10 bg-[#0f0f0f] p-6 shadow-2xl font-sans overflow-hidden">
-        
+    <div 
+      className="fixed inset-0 z-150 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div 
+        className="relative w-full max-w-md rounded-4xl border border-white/10 bg-[#0f0f0f] p-6 shadow-2xl font-sans overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         {showSuccess ? (
           <div className="py-8 flex flex-col items-center text-center animate-in fade-in zoom-in duration-300">
             <div className="w-20 h-20 bg-[#00925d]/20 rounded-full flex items-center justify-center text-[#00925d] mb-6 relative">
-               <PartyPopper size={40} className="animate-bounce" />
-               <div className="absolute inset-0 bg-[#00925d] rounded-full animate-ping opacity-20" />
+              <PartyPopper size={40} className="animate-bounce" />
+              <div className="absolute inset-0 bg-[#00925d] rounded-full animate-ping opacity-20" />
             </div>
-            
             <h2 className="text-2xl font-bold text-white mb-2">Welcome to SaintStream!</h2>
             <p className="text-gray-400 text-sm mb-8 px-6">
               Check your email <span className="text-[#00925d] underline">{email}</span> to verify your account.
             </p>
-
             <div className="flex flex-col w-full gap-4">
               <button
+                type="button"
                 onClick={() => onSwitchToLogin()}
                 className="w-full bg-[#00925d] text-white rounded-2xl py-3.5 font-bold hover:bg-[#007a4d] transition-all cursor-pointer flex items-center justify-center gap-2"
               >
@@ -106,7 +108,11 @@ useEffect(() => {
                 </div>
                 <p className="text-xs text-gray-400 mt-1">Create your account</p>
               </div>
-              <button onClick={onClose} className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white hover:bg-white/10 transition-all cursor-pointer">
+              <button 
+                type="button"
+                onClick={onClose} 
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white hover:bg-white/10 transition-all cursor-pointer"
+              >
                 Close
               </button>
             </div>
@@ -119,9 +125,12 @@ useEffect(() => {
 
             <form onSubmit={handleSignUp} className="space-y-3">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-white">Username</label>
+                <label htmlFor="signup-username" className="text-xs font-bold text-white ml-1">Username</label>
                 <input
+                  id="signup-username"
+                  name="username"
                   type="text"
+                  autoComplete="username"
                   placeholder="Username"
                   className="w-full rounded-xl border border-white/20 bg-transparent p-3 text-sm text-white outline-none focus:border-[#00925d]/50"
                   value={username}
@@ -131,9 +140,12 @@ useEffect(() => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-white">Email</label>
+                <label htmlFor="signup-email" className="text-xs font-bold text-white ml-1">Email</label>
                 <input
+                  id="signup-email"
+                  name="email"
                   type="email"
+                  autoComplete="email"
                   placeholder="Email"
                   className="w-full rounded-xl border border-white/20 bg-transparent p-3 text-sm text-white outline-none focus:border-[#00925d]/50"
                   value={email}
@@ -143,26 +155,36 @@ useEffect(() => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-white">Password</label>
+                <label htmlFor="signup-password" className="text-xs font-bold text-white ml-1">Password</label>
                 <div className="relative">
                   <input
+                    id="signup-password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
                     placeholder="Password"
                     className="w-full rounded-xl border border-white/20 bg-transparent p-3 text-sm text-white outline-none focus:border-[#00925d]/50"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPassword(!showPassword)} 
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                  >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-white">Confirm Password</label>
+                <label htmlFor="signup-confirm" className="text-xs font-bold text-white ml-1">Confirm Password</label>
                 <input
+                  id="signup-confirm"
+                  name="confirmPassword"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   placeholder="Confirm password"
                   className="w-full rounded-xl border border-white/20 bg-transparent p-3 text-sm text-white outline-none focus:border-[#00925d]/50"
                   value={confirmPassword}
@@ -178,7 +200,10 @@ useEffect(() => {
                 >
                   {isChecked && <Check size={12} className="text-white stroke-[4px]" />}
                 </div>
-                <label className="text-[10px] text-gray-400 select-none cursor-pointer">
+                <label 
+                  className="text-[10px] text-gray-400 select-none cursor-pointer"
+                  onClick={() => setIsChecked(!isChecked)}
+                >
                   I agree to our <span className="text-white font-bold">Privacy Policy</span> and <span className="text-white font-bold">Terms & Conditions</span>
                 </label>
               </div>
@@ -191,6 +216,20 @@ useEffect(() => {
                 {loading ? "Creating account..." : "Continue"}
               </button>
             </form>
+
+            <p className="mt-6 text-center text-xs text-gray-400">
+              Already have an account?{" "}
+              <button 
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSwitchToLogin();
+                }} 
+                className="text-white font-bold hover:underline cursor-pointer"
+              >
+                Login
+              </button>
+            </p>
           </>
         )}
       </div>
