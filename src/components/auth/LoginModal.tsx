@@ -45,12 +45,12 @@ const LoginModal = ({
 
   return (
     <div 
-      className="fixed inset-0 z-110 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4 animate-in fade-in duration-200"
-      onClick={onClose}
+      className="fixed inset-0 z-150 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div 
-        className="relative w-full max-w-md rounded-4xl border border-white/10 bg-[#0f0f0f] p-6 shadow-2xl font-sans animate-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-md rounded-4xl border border-white/10 bg-[#0f0f0f] p-6 shadow-2xl font-sans overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="mb-6 flex items-center justify-between relative">
           <div className="flex flex-col">
@@ -63,10 +63,7 @@ const LoginModal = ({
           
           <button
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              onClose();
-            }}
+            onClick={onClose}
             className="z-120 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white hover:bg-white/10 transition-all cursor-pointer pointer-events-auto active:scale-95"
           >
             Close

@@ -30,10 +30,11 @@ const SignUpModal = ({
     if (showSuccess && countdown > 0) {
       timer = setTimeout(() => setCountdown(countdown - 1), 1000);
     } else if (showSuccess && countdown === 0) {
+      onClose();
       onSwitchToLogin();
     }
     return () => clearTimeout(timer);
-  }, [showSuccess, countdown, onSwitchToLogin]);
+  }, [showSuccess, countdown, onClose, onSwitchToLogin]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +47,7 @@ const SignUpModal = ({
 
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: {
@@ -58,7 +59,11 @@ const SignUpModal = ({
       setErrorMsg(error.message);
       setLoading(false);
     } else {
-      setShowSuccess(true);
+      if (data.session) {
+        onClose();
+      } else {
+        setShowSuccess(true);
+      }
       setLoading(false);
     }
   };
@@ -68,7 +73,11 @@ const SignUpModal = ({
   return (
     <div 
       className="fixed inset-0 z-150 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4"
-      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget && !showSuccess) {
+          onClose();
+        }
+      }}
     >
       <div 
         className="relative w-full max-w-md rounded-4xl border border-white/10 bg-[#0f0f0f] p-6 shadow-2xl font-sans overflow-hidden animate-in fade-in zoom-in-95 duration-200"
@@ -87,7 +96,10 @@ const SignUpModal = ({
             <div className="flex flex-col w-full gap-4">
               <button
                 type="button"
-                onClick={() => onSwitchToLogin()}
+                onClick={() => {
+                  onClose();
+                  onSwitchToLogin();
+                }}
                 className="w-full bg-[#00925d] text-white rounded-2xl py-3.5 font-bold hover:bg-[#007a4d] transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <Mail size={18} />
@@ -223,6 +235,7 @@ const SignUpModal = ({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
+                  onClose();
                   onSwitchToLogin();
                 }} 
                 className="text-white font-bold hover:underline cursor-pointer"
