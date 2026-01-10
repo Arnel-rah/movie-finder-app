@@ -129,7 +129,10 @@ const LoginModal = ({
           Don't have an account?{" "}
           <button
             type="button"
-            onClick={onSwitchToSignUp}
+            onClick={() => {
+              onClose();
+              onSwitchToSignUp();
+            }}
             className="text-white font-bold hover:underline cursor-pointer"
           >
             Sign Up
