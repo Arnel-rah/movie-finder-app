@@ -1,6 +1,6 @@
 import Navbar from "./components/layout/Navbar";
 import HeroBanner from "./components/movies/HeroBanner";
-import BrandLogos from "./components/brands/BrandLogos"; // Importation
+import BrandLogos from "./components/brands/BrandLogos";
 import MovieRow from "./components/movies/MovieRow";
 import { useMovies } from "./hooks/useMovies";
 import TopRankingRow from "./components/movies/TopRankingRow";
