@@ -12,16 +12,13 @@ interface Movie {
 }
 
 const FeaturedSection = ({ movies }: { movies: Movie[] }) => {
-  // On prend le premier film pour l'affichage principal (Hero)
   const mainMovie = movies[0];
-  // On prend les suivants pour le mini-carrousel à droite
   const carouselMovies = movies.slice(1, 4);
 
   if (!mainMovie) return null;
 
   return (
     <section className="relative w-full min-h-150 bg-[#0f0f0f] overflow-hidden py-12">
-      {/* Background avec Clip-Path dynamique */}
       <div className="absolute inset-0 z-0">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-40 transition-all duration-700"
@@ -35,7 +32,6 @@ const FeaturedSection = ({ movies }: { movies: Movie[] }) => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         
-        {/* Infos du film (Data API) */}
         <div className="flex flex-col animate-in fade-in slide-in-from-left-8 duration-700">
           <h2 className="text-2xl font-black text-white mb-1">Featured in SaintStream</h2>
           <p className="text-gray-400 text-sm mb-8">Best featured for you today</p>
@@ -75,7 +71,6 @@ const FeaturedSection = ({ movies }: { movies: Movie[] }) => {
           </div>
         </div>
 
-        {/* Carrousel Droite (Data API) */}
         <div className="relative flex items-center gap-6 h-100">
           {carouselMovies.map((movie, index) => (
             <div 
