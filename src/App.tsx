@@ -7,6 +7,7 @@ import TopRankingRow from "./components/movies/TopRankingRow";
 import MovieBot from "./components/MovieBot";
 
 function App() {
+    console.log("Teste de CI")
   const { movies: trendingMovies, loading: heroLoading } = useMovies(
     "/trending/movie/week"
   );
