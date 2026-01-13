@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Bookmark, X, AlertCircle } from "lucide-react";
+import { Play, Bookmark, BookmarkCheck, X, AlertCircle } from "lucide-react";
 import YouTube from "react-youtube";
 import type { Movie } from "../../types/movie";
 import { BACKDROP_BASE_URL, getMovieVideos } from "../../api/movieService";
@@ -22,9 +22,15 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
   const [showTrailer, setShowTrailer] = useState(false);
   const [trailerVideoId, setTrailerVideoId] = useState<string | null>(null);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const [watchlist, setWatchlist] = useState<Movie[]>([]);
   
   const displayLimit = Math.min(movies.length, 10);
   const currentMovie = movies[currentIndex];
+
+  useEffect(() => {
+    const saved = localStorage.getItem("movie_watchlist");
+    if (saved) setWatchlist(JSON.parse(saved));
+  }, []);
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev >= displayLimit - 1 ? 0 : prev + 1));
@@ -55,6 +61,23 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
     };
     fetchVideo();
   }, [currentMovie?.id]);
+
+  const toggleWatchlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    let updatedWatchlist;
+    const isInside = watchlist.some((m) => m.id === currentMovie.id);
+
+    if (isInside) {
+      updatedWatchlist = watchlist.filter((m) => m.id !== currentMovie.id);
+    } else {
+      updatedWatchlist = [...watchlist, currentMovie];
+    }
+
+    setWatchlist(updatedWatchlist);
+    localStorage.setItem("movie_watchlist", JSON.stringify(updatedWatchlist));
+  };
+
+  const isInWatchlist = watchlist.some((m) => m.id === currentMovie?.id);
 
   const handleOpenTrailer = () => {
     if (trailerVideoId) {
@@ -141,10 +164,15 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex-1 md:flex-none border border-white/20 backdrop-blur-md text-white h-12 px-8 rounded-xl flex items-center justify-center gap-2 font-bold transition-all cursor-pointer hover:bg-white/10"
+              onClick={toggleWatchlist}
+              className={`flex-1 md:flex-none h-12 px-8 rounded-xl flex items-center justify-center gap-2 font-bold transition-all cursor-pointer border backdrop-blur-md ${
+                isInWatchlist 
+                ? "bg-[#00925d]/20 border-[#00925d] text-[#00ff9d]" 
+                : "border-white/20 text-white hover:bg-white/10"
+              }`}
             >
-              <Bookmark size={18} />
-              <span>Watchlist</span>
+              {isInWatchlist ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+              <span>{isInWatchlist ? "In Watchlist" : "Watchlist"}</span>
             </motion.button>
           </div>
         </motion.div>
@@ -188,7 +216,7 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
                 opts={{
                   width: '100%',
                   height: '100%',
-                  playerVars: { autoplay: 1, rel: 0, modestbranding: 1, origin: window.location.origin },
+                  playerVars: { autoplay: 1, rel: 0, modestbranding: 1 },
                 }}
                 className="w-full h-full"
               />
