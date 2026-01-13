@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Bookmark, X, AlertCircle } from "lucide-react";
 import YouTube from "react-youtube";
@@ -22,27 +22,25 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
   const [showTrailer, setShowTrailer] = useState(false);
   const [trailerVideoId, setTrailerVideoId] = useState<string | null>(null);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
-  const displayLimit = 5;
-
+  
+  const displayLimit = Math.min(movies.length, 10);
   const currentMovie = movies[currentIndex];
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev >= displayLimit - 1 ? 0 : prev + 1));
+  }, [displayLimit]);
 
   useEffect(() => {
     if (movies.length > 0) {
-      const limit = Math.min(movies.length, displayLimit);
-      setCurrentIndex(Math.floor(Math.random() * limit));
+      setCurrentIndex(Math.floor(Math.random() * displayLimit));
     }
-  }, [movies.length]);
+  }, [movies.length, displayLimit]);
 
   useEffect(() => {
-    if (movies.length === 0 || loading || showTrailer) return;
-
-    const interval = setInterval(() => {
-      const limit = Math.min(movies.length, displayLimit);
-      setCurrentIndex((prev) => (prev >= limit - 1 ? 0 : prev + 1));
-    }, 8000);
-
+    if (movies.length <= 1 || loading || showTrailer) return;
+    const interval = setInterval(nextSlide, 8000);
     return () => clearInterval(interval);
-  }, [movies.length, loading, showTrailer]);
+  }, [movies.length, loading, showTrailer, nextSlide]);
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -50,13 +48,13 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
         try {
           const video = await getMovieVideos(currentMovie.id);
           setTrailerVideoId(video ? video.key : null);
-        } catch (error) {
+        } catch {
           setTrailerVideoId(null);
         }
       }
     };
     fetchVideo();
-  }, [currentMovie]);
+  }, [currentMovie?.id]);
 
   const handleOpenTrailer = () => {
     if (trailerVideoId) {
@@ -74,85 +72,91 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
     return <div className="h-[75vh] md:h-[85vh] w-full bg-[#0a0a0a] animate-pulse" />;
   }
 
-  const actualLimit = Math.min(movies.length, displayLimit);
-
   return (
     <div className="relative w-full h-[75vh] md:h-[85vh] overflow-hidden bg-[#0a0a0a] text-white">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentMovie.id}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.2 }}
+          transition={{ duration: 1.5 }}
           className="absolute inset-0 z-0"
         >
-          <div
+          <motion.div
+            initial={{ scale: 1 }}
+            animate={{ scale: 1.15 }}
+            transition={{ duration: 10, ease: "linear" }}
             className="w-full h-full bg-cover bg-center"
             style={{ backgroundImage: `url('${BACKDROP_BASE_URL}${currentMovie.backdrop_path}')` }}
           >
-            <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
-          </div>
+            <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-transparent" />
+          </motion.div>
         </motion.div>
       </AnimatePresence>
 
       <div className="relative z-10 h-full flex flex-col justify-end pb-20 px-6 md:px-16 lg:px-24">
         <motion.div
           key={`content-${currentMovie.id}`}
-          initial={{ y: 20, opacity: 0 }}
+          initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold mb-4 inline-block border border-white/10 uppercase tracking-wider text-white">
-            Movie
+          <span className="bg-[#00925d]/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold mb-4 inline-block border border-[#00925d]/30 uppercase tracking-widest text-[#00ff9d]">
+            Trending Now
           </span>
 
-          <h1 className="text-3xl md:text-5xl font-bold mb-3 leading-tight drop-shadow-lg">
+          <h1 className="text-3xl md:text-5xl font-bold mb-3 leading-tight drop-shadow-2xl">
             {currentMovie.title}
           </h1>
 
-          <div className="flex items-center gap-2 text-gray-300 text-[11px] md:text-sm mb-4 font-medium opacity-90">
+          <div className="flex items-center gap-2 text-gray-300 text-[11px] md:text-sm mb-4 font-medium">
             <span>{currentMovie.release_date?.split("-")[0]}</span>
             <span>•</span>
-            <span className="text-[#00925d]">
+            <span className="text-[#00925d] font-bold">
               {currentMovie.genre_ids?.slice(0, 2).map((id: number) => GENRE_MAP[id]).join(" • ")}
             </span>
           </div>
 
-          <p className="text-white text-[13px] md:text-base max-w-2xl line-clamp-2 mb-8 leading-snug opacity-80">
+          <p className="text-white/70 text-[13px] md:text-base max-w-2xl line-clamp-2 mb-8 leading-relaxed">
             {currentMovie.overview}
           </p>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <motion.button 
-              layout
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleOpenTrailer}
               disabled={!trailerVideoId}
-              className={`flex-1 md:flex-none h-12 px-6 rounded-xl flex items-center justify-center gap-2 font-bold transition-all active:scale-95 shadow-lg ${
+              className={`flex-1 md:flex-none h-12 px-8 rounded-xl flex items-center justify-center gap-2 font-bold transition-all shadow-lg shadow-[#00925d]/20 ${
                 trailerVideoId 
-                ? "bg-[#00925d] cursor-pointer hover:bg-[#007a4e] text-white" 
+                ? "bg-[#00925d] cursor-pointer text-white" 
                 : "bg-white/5 border border-white/10 text-white/40 cursor-not-allowed"
               }`}
             >
               {trailerVideoId ? <Play size={18} fill="currentColor" /> : <AlertCircle size={18} />}
-              <span>{trailerVideoId ? "Watch Trailer" : "No Trailer Available"}</span>
+              <span>{trailerVideoId ? "Watch Trailer" : "No Trailer"}</span>
             </motion.button>
 
-            <button className="flex-1 md:flex-none border border-white/40 backdrop-blur-md text-white h-12 px-6 rounded-xl flex items-center justify-center gap-2 font-bold transition-all active:scale-95 cursor-pointer hover:bg-white/10">
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex-1 md:flex-none border border-white/20 backdrop-blur-md text-white h-12 px-8 rounded-xl flex items-center justify-center gap-2 font-bold transition-all cursor-pointer hover:bg-white/10"
+            >
               <Bookmark size={18} />
-              <span>Add Watchlist</span>
-            </button>
+              <span>Watchlist</span>
+            </motion.button>
           </div>
         </motion.div>
       </div>
 
-      <div className="absolute bottom-6 w-full flex justify-center gap-2 z-20">
-        {Array.from({ length: actualLimit }).map((_, index) => (
+      <div className="absolute bottom-8 w-full flex justify-center gap-3 z-20">
+        {Array.from({ length: displayLimit }).map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`transition-all duration-300 rounded-full cursor-pointer ${
-              index === currentIndex ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/40"
+            className={`transition-all duration-500 rounded-full cursor-pointer ${
+              index === currentIndex ? "w-10 h-1.5 bg-[#00925d]" : "w-2.5 h-1.5 bg-white/20 hover:bg-white/40"
             }`}
           />
         ))}
@@ -167,14 +171,15 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
             className="fixed inset-0 z-100 flex items-center justify-center bg-black/95 backdrop-blur-md p-4"
           >
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl"
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10"
             >
               <button 
                 onClick={handleCloseTrailer}
-                className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-white/20 rounded-full text-white cursor-pointer transition-colors"
+                className="absolute top-5 right-5 z-10 p-2.5 bg-black/60 hover:bg-red-500 rounded-full text-white cursor-pointer transition-all hover:rotate-90"
               >
                 <X size={24} />
               </button>
@@ -183,7 +188,7 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
                 opts={{
                   width: '100%',
                   height: '100%',
-                  playerVars: { autoplay: 1, rel: 0, modestbranding: 1 },
+                  playerVars: { autoplay: 1, rel: 0, modestbranding: 1, origin: window.location.origin },
                 }}
                 className="w-full h-full"
               />
