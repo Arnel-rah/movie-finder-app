@@ -4,6 +4,7 @@ import { Play, Bookmark, BookmarkCheck, X, AlertCircle } from "lucide-react";
 import YouTube from "react-youtube";
 import type { Movie } from "../../types/movie";
 import { BACKDROP_BASE_URL, getMovieVideos } from "../../api/movieService";
+import { supabase } from "../../api/supabaseClient";
 
 interface HeroBannerProps {
   movies: Movie[];
@@ -23,14 +24,29 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
   const [trailerVideoId, setTrailerVideoId] = useState<string | null>(null);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [watchlist, setWatchlist] = useState<Movie[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
   
   const displayLimit = Math.min(movies.length, 10);
   const currentMovie = movies[currentIndex];
 
   useEffect(() => {
-    const saved = localStorage.getItem("movie_watchlist");
-    if (saved) setWatchlist(JSON.parse(saved));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserId(session?.user?.id ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id ?? null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  const WATCHLIST_KEY = userId ? `watchlist_${userId}` : "watchlist_guest";
+
+  useEffect(() => {
+    const saved = localStorage.getItem(WATCHLIST_KEY);
+    setWatchlist(saved ? JSON.parse(saved) : []);
+  }, [WATCHLIST_KEY]);
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev >= displayLimit - 1 ? 0 : prev + 1));
@@ -74,7 +90,7 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
     }
 
     setWatchlist(updatedWatchlist);
-    localStorage.setItem("movie_watchlist", JSON.stringify(updatedWatchlist));
+    localStorage.setItem(WATCHLIST_KEY, JSON.stringify(updatedWatchlist));
   };
 
   const isInWatchlist = watchlist.some((m) => m.id === currentMovie?.id);
@@ -151,7 +167,7 @@ const HeroBanner = ({ movies, loading }: HeroBannerProps) => {
               whileTap={{ scale: 0.95 }}
               onClick={handleOpenTrailer}
               disabled={!trailerVideoId}
-              className={`flex-1 md:flex-none h-12 px-8 rounded-xl flex items-center justify-center gap-2 font-bold transition-all shadow-lg shadow-[#00925d]/20 ${
+              className={`flex-1 md:flex-none h-12 px-8 rounded-xl flex items-center justify-center gap-2 font-bold transition-all shadow-lg ${
                 trailerVideoId 
                 ? "bg-[#00925d] cursor-pointer text-white" 
                 : "bg-white/5 border border-white/10 text-white/40 cursor-not-allowed"
