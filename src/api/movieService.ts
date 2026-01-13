@@ -1,4 +1,3 @@
-
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
 
@@ -24,5 +23,27 @@ export const fetchMovies = async (endpoint: string) => {
   } catch (error) {
     console.error("Erreur fetch:", error);
     return [];
+  }
+};
+
+export const getMovieVideos = async (movieId: number) => {
+  try {
+    if (!BASE_URL || !API_KEY) return null;
+    const baseUrlClean = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+    const url = `${baseUrlClean}/movie/${movieId}/videos?api_key=${API_KEY}&language=en-US`;
+
+    const response = await fetch(url);
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    
+    const trailer = data.results?.find(
+      (v: any) => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser")
+    );
+
+    return trailer || null;
+  } catch (error) {
+    console.error("Erreur videos fetch:", error);
+    return null;
   }
 };
