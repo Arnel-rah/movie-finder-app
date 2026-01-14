@@ -10,7 +10,7 @@ import WatchlistPage from "./pages/WatchlistPage";
 
 function App() {
   const { movies: trendingMovies, loading: heroLoading } = useMovies(
-    "/trending/movie/week"
+    "/trending/movie/week"  
   );
 
   return (
