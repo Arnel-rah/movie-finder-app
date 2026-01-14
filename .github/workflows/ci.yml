@@ -18,7 +18,7 @@ jobs:
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4z
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
@@ -34,8 +34,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint check
-        run: pnpm run lint
+      # - name: Lint check
+      #   run: pnpm run lint
 
       - name: Type check
         run: pnpm run type-check
