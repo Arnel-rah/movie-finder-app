@@ -8,7 +8,7 @@ import MovieBot from "./components/MovieBot";
 
 function App() {
   const { movies: trendingMovies, loading: heroLoading } = useMovies(
-    "/trending/movie/week"
+    "/trending/movie/week"  
   );
 
   return (

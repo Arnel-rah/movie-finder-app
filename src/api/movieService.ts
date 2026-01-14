@@ -19,6 +19,8 @@ export const fetchMovies = async (endpoint: string) => {
       return [];
     }
 
+    console.log("Tesde de CI/CD github");
+    
     const data = await response.json();
     return data.results || [];
   } catch (error) {
