@@ -1,3 +1,4 @@
+
 import Navbar from "./components/layout/Navbar";
 import HeroBanner from "./components/movies/HeroBanner";
 import BrandLogos from "./components/brands/BrandLogos";
@@ -30,3 +31,5 @@ function App() {
 }
 
 export default App;
+
+
