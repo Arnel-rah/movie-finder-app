@@ -2,21 +2,21 @@ name: Garder Supabase éveillé
 
 on:
   schedule:
-    - cron: '0 9 * * 1,4' 
+    - cron: '0 9 * * 1,4'     # lundi + jeudi 9h UTC
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo (optionnel)
-        uses: actions/checkout@v4
-
       - name: Ping Supabase
+        env:
+          SUPABASE_REF: ${{ secrets.SUPABASE_REF }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           curl --request POST \
-            --url https://${{ secrets.VITE_SUPABASE_URL }}.supabase.co/rest/v1/keep_alive \
-            --header 'apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}' \
-            --header 'Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}' \
-            --header 'Content-Type: application/json' \
+            --url "https://${SUPABASE_REF}.supabase.co/rest/v1/keep_alive" \
+            --header "apikey: ${SUPABASE_ANON_KEY}" \
+            --header "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            --header "Content-Type: application/json" \
             --data '[{"message": "heartbeat"}]'
