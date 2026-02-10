@@ -1,16 +1,14 @@
-
 import Navbar from "./components/layout/Navbar";
 import HeroBanner from "./components/movies/HeroBanner";
-import BrandLogos from "./components/brands/BrandLogos";
+import BrandLogos from "./components/brands/BrandLogos"; // Importation
 import MovieRow from "./components/movies/MovieRow";
 import { useMovies } from "./hooks/useMovies";
 import TopRankingRow from "./components/movies/TopRankingRow";
 import MovieBot from "./components/MovieBot";
 
 function App() {
-    console.log("Teste de CI")
   const { movies: trendingMovies, loading: heroLoading } = useMovies(
-    "/trending/movie/week"
+    "/trending/movie/week"  
   );
 
   return (
@@ -31,5 +29,3 @@ function App() {
 }
 
 export default App;
-
-
