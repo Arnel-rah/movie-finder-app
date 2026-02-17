@@ -5,6 +5,7 @@ on:
     - cron: '0 9 * * 1,4'     # lundi + jeudi 9h UTC
   workflow_dispatch:
 
+# Teste
 jobs:
   ping:
     runs-on: ubuntu-latest
